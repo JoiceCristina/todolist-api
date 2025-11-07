@@ -1,15 +1,24 @@
-def buscar_tarefas():
-    tarefas = [
-        {
-            "id": 1,
-            "tarefa": "Aprender Python",
-            "status": "Pendente",
-        },
-        {
-            "id": 2,
-            "tarefa": "Aprender Inglês",
-            "status": "Pendente",
-        },
+#importa a conexao criada
+from conexao import get_conexao
 
-    ]
-    return tarefas
+#importa a biblioteca psycopg2
+from psycopg2.extras import RealDictCursor
+
+#importa o jason flask para retornar os dados 
+from flask import jsonify
+
+def buscar_tarefas():
+    conn = get_conexao()
+    cursor = conn.cursor(cursor_factory=RealDictCursor)
+    cursor.execute(
+         "SELECT id, nome, descricao FROM tarefas;"
+    )
+       
+    #buscar todos os registros na tabela
+    tarefas = cursor.fetchall()
+
+    #fecha as conexões
+    cursor.close()
+    conn.close()
+
+    return jsonify(tarefas)
